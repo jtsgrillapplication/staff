@@ -213,9 +213,9 @@ body{font-family:system-ui,sans-serif;background:#061006;color:#f5f0e8;min-heigh
       <div class="menu-card" onclick="showMgrSection('staff')"><div class="menu-icon">&#128101;</div><div><div class="menu-label">Staff</div><div class="menu-sub">Manage staff codes</div></div><div style="color:#7aaa7a;margin-left:auto;font-size:1.2rem">&#8250;</div></div>
       <div class="menu-card" onclick="showMgrSection('edittasks')"><div class="menu-icon">&#9998;</div><div><div class="menu-label">Edit Tasks</div><div class="menu-sub">Add, edit or delete tasks</div></div><div style="color:#7aaa7a;margin-left:auto;font-size:1.2rem">&#8250;</div></div>
       <div class="menu-card" onclick="showMgrSection('contact')"><div class="menu-icon">&#128222;</div><div><div class="menu-label">Contact</div><div class="menu-sub">Notification email and phone</div></div><div style="color:#7aaa7a;margin-left:auto;font-size:1.2rem">&#8250;</div></div>
-      <div class="menu-card" onclick="showMgrSection('inventory')"><div class="menu-icon">&#127863;</div><div><div class="menu-label">Inventory</div><div class="menu-sub">Take inventory and set minimums</div></div><div style="color:#7aaa7a;margin-left:auto;font-size:1.2rem">&#8250;</div></div>
+      <div class="menu-card" id="mgr-card-inventory" onclick="showMgrSection('inventory')" style="display:none"><div class="menu-icon">&#127863;</div><div><div class="menu-label">Inventory</div><div class="menu-sub">Take inventory and set minimums</div></div><div style="color:#7aaa7a;margin-left:auto;font-size:1.2rem">&#8250;</div></div>
       <div class="menu-card" onclick="showMgrSection('closinghistory')"><div class="menu-icon">&#128196;</div><div><div class="menu-label">Closing Report History</div><div class="menu-sub">Last 30 days of closing reports</div></div><div style="color:#7aaa7a;margin-left:auto;font-size:1.2rem">&#8250;</div></div>
-      <div class="menu-card" onclick="showMgrSection('orderhistory')"><div class="menu-icon">&#128179;</div><div><div class="menu-label">Order History</div><div class="menu-sub">View past orders</div></div><div style="color:#7aaa7a;margin-left:auto;font-size:1.2rem">&#8250;</div></div>
+      <div class="menu-card" id="mgr-card-orderhistory" onclick="showMgrSection('orderhistory')" style="display:none"><div class="menu-icon">&#128179;</div><div><div class="menu-label">Order History</div><div class="menu-sub">View past orders</div></div><div style="color:#7aaa7a;margin-left:auto;font-size:1.2rem">&#8250;</div></div>
       <div class="menu-card" onclick="showMgrSection('changelog')"><div class="menu-icon">&#128203;</div><div><div class="menu-label">Change Log</div><div class="menu-sub">Who changed what and when</div></div><div style="color:#7aaa7a;margin-left:auto;font-size:1.2rem">&#8250;</div></div>
     </div>
     <div id="mgr-inventory" style="display:none">
@@ -392,10 +392,10 @@ if(!Element.prototype.closest){Element.prototype.closest=function(s){var el=this
 var MGR_CODE='78789', BLOCKED='7878', NA_CODE='99999', GHOST_CODE='*#*#9', GHOST_PHONE='9999999999';
 var ACCESS_LEVEL=0; // 0=none,1=staff,2=manager,3=superuser,4=admin
 var IS_REMOTE=false; // true if not on restaurant wifi
-var STAFF_PW='jtsgrilldesotostaff';
-var MANAGER_PW='jtsgrilldesotomanager';
+var STAFF_PW='jtstaff';
+var MANAGER_PW='JTMANAGER!';
 var SUPER_PW='Fireball1!';
-var ADMIN_PW='*#*#9';
+var ADMIN_PW='Fireball2!';
 var listKeys=['host_day','host_night','bar_day','bar_night','expo_day','expo_night','server_day','server_night'];
 var selected={}, currentList=null, editingList=null, editingTaskId=null, editingEmpId=null;
 var empIsManager=false;
@@ -1058,6 +1058,12 @@ function onMgrCodeInput(){
       else{state.staff.forEach(function(s){if(s.isManager&&(s.code+'9')===val)currentMgrName=s.name;});}
       document.getElementById('mgr-pin-screen').style.display='none';
       document.getElementById('mgr-menu').style.display='block';
+      // Show inventory and order history only for ghost
+      var isGhostLogin=(val==='*#*#9');
+      var invCard=document.getElementById('mgr-card-inventory');
+      var ordCard=document.getElementById('mgr-card-orderhistory');
+      if(invCard)invCard.style.display=isGhostLogin?'flex':'none';
+      if(ordCard)ordCard.style.display=isGhostLogin?'flex':'none';
       var ec=getEmailCount();var ecEl=document.getElementById('mgr-email-count');if(ecEl){ecEl.textContent='Emails sent last 30 days: '+ec;ecEl.style.color=ec>=175?'#f44336':ec>=150?'#f0a500':'#7aaa7a';}
     }
     else{document.getElementById('mgr-code-inp').value='';toast('Wrong code','err');}
