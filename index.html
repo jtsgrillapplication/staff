@@ -157,7 +157,7 @@ body{font-family:system-ui,sans-serif;background:#061006;color:#f5f0e8;min-heigh
 <div class="hdr">
   <div style="display:flex;align-items:center;gap:8px"><div id="sync-indicator" style="width:8px;height:8px;border-radius:50%;background:#f44336;flex-shrink:0" title="Firebase sync status"></div><div><div class="htitle">JTs Grill</div><div class="hsub">STAFF OPERATIONS</div></div></div>
   <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
-    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 03:18 AM CT</div></div>
+    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 03:27 AM CT</div></div>
     <button onclick="location.reload()" style="background:#1a301a;border:1px solid #254025;color:#7aaa7a;padding:5px 8px;border-radius:7px;font-size:0.6rem;font-weight:700;cursor:pointer;white-space:nowrap;letter-spacing:0.5px">&#8635; Update</button>
   </div>
 </div>
@@ -371,6 +371,15 @@ body{font-family:system-ui,sans-serif;background:#061006;color:#f5f0e8;min-heigh
     <input type="text" class="inp" id="emp-lname" placeholder="Last name">
     <input type="tel" class="inp" id="emp-code" placeholder="4-digit code" maxlength="4" inputmode="numeric">
     <input type="tel" class="inp" id="emp-phone" placeholder="Phone number (e.g. 9135551234)">
+    <div style="font-size:0.75rem;color:#7aaa7a;margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:1px">Roles</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px" id="role-checkboxes">
+      <div class="role-chk" onclick="toggleRole(this,'expo')" data-role="expo" style="background:#112211;border:1px solid #254025;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:0.78rem;color:#7aaa7a;font-weight:600">Expo</div>
+      <div class="role-chk" onclick="toggleRole(this,'host')" data-role="host" style="background:#112211;border:1px solid #254025;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:0.78rem;color:#7aaa7a;font-weight:600">Host</div>
+      <div class="role-chk" onclick="toggleRole(this,'curbside')" data-role="curbside" style="background:#112211;border:1px solid #254025;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:0.78rem;color:#7aaa7a;font-weight:600">Curbside</div>
+      <div class="role-chk" onclick="toggleRole(this,'server')" data-role="server" style="background:#112211;border:1px solid #254025;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:0.78rem;color:#7aaa7a;font-weight:600">Server</div>
+      <div class="role-chk" onclick="toggleRole(this,'cocktail')" data-role="cocktail" style="background:#112211;border:1px solid #254025;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:0.78rem;color:#7aaa7a;font-weight:600">Cocktail</div>
+      <div class="role-chk" onclick="toggleRole(this,'bartender')" data-role="bartender" style="background:#112211;border:1px solid #254025;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:0.78rem;color:#7aaa7a;font-weight:600">Bartender</div>
+    </div>
     <div class="chk-row" onclick="toggleMgrChk()">
       <div class="chk-box" id="mgr-chk"></div>
       <div><div class="chk-label">Manager</div><div class="chk-sub">Appends a 9 to their code for manager access</div></div>
@@ -1303,6 +1312,40 @@ function saveTask(){
 
 function deleteTask(){var gone='';TASKS[editingList].forEach(function(t){if(t.id===editingTaskId)gone=t.name;});TASKS[editingList]=TASKS[editingList].filter(function(t){return t.id!==editingTaskId;});saveAll();logChange(currentMgrName,'Deleted task',gone+' ('+lname(editingList)+')');closeM('modal-task-edit');renderEditTaskItems();renderList(editingList);toast('Task deleted','ok');}
 
+var empRoles=[];
+
+function toggleRole(el,role){
+  var idx=empRoles.indexOf(role);
+  if(idx>=0){
+    empRoles.splice(idx,1);
+    el.style.background='#112211';
+    el.style.borderColor='#254025';
+    el.style.color='#7aaa7a';
+  } else {
+    empRoles.push(role);
+    el.style.background='#2e6b2e';
+    el.style.borderColor='#4cde50';
+    el.style.color='white';
+  }
+}
+
+function setRoles(roles){
+  empRoles=roles||[];
+  document.querySelectorAll('.role-chk').forEach(function(el){
+    var role=el.getAttribute('data-role');
+    if(!role)return;
+    if(empRoles.indexOf(role)>=0){
+      el.style.background='#2e6b2e';
+      el.style.borderColor='#4cde50';
+      el.style.color='white';
+    } else {
+      el.style.background='#112211';
+      el.style.borderColor='#254025';
+      el.style.color='#7aaa7a';
+    }
+  });
+}
+
 function toggleMgrChk(){
   empIsManager=!empIsManager;
   var box=document.getElementById('mgr-chk'),note=document.getElementById('emp-mgr-note');
@@ -1341,6 +1384,7 @@ function renderStaff(){
     var parts=[];
     if(!s.isManager||s.id==='s_chris') parts.push('Code: '+s.code);
     if(s.phone) parts.push(formatPhone(s.phone));
+    if(s.roles&&s.roles.length)parts.push(s.roles.map(function(r){return r.charAt(0).toUpperCase()+r.slice(1);}).join(', '));
     subDiv.textContent=parts.join('  -  ');
     if(parts.length) info.appendChild(subDiv);
     var btn=document.createElement('button');
@@ -1364,6 +1408,7 @@ function openAddEmp(){
   document.getElementById('emp-fname').value='';
   document.getElementById('emp-lname').value='';
   document.getElementById('emp-code').value='';
+  setRoles([]);
   var box=document.getElementById('mgr-chk');box.classList.remove('on');box.textContent='';
   document.getElementById('emp-mgr-note').style.display='none';
   document.getElementById('emp-phone').value='';
@@ -1384,6 +1429,7 @@ function openEditEmp(id){
   document.getElementById('emp-lname').value=emp.lastName||'';
   document.getElementById('emp-code').value=emp.isMaster?'7878':emp.code;
   document.getElementById('emp-phone').value=emp.phone||'';
+  setRoles(emp.roles||[]);
   var box=document.getElementById('mgr-chk'),note=document.getElementById('emp-mgr-note');
   var mgrChkRow=document.getElementById('mgr-chk').parentNode;
   mgrChkRow.style.display='flex';
@@ -1440,6 +1486,7 @@ function saveEmp(){
         if(s.id==='s_chris'){s.isManager=true;s.isSuperUser=true;s.code='4441';s.name='Chris';s.lastName='Gehringer';}
         else{s.isManager=empIsManager;s.isSuperUser=isSuperUser||(s.isSuperUser&&!isSuperUser===false?s.isSuperUser:false);if(isSuperUser)s.isSuperUser=true;}
         s.phone=document.getElementById('emp-phone').value.trim().replace(/\D/g,'');
+        if(s.id!=='s_chris')s.roles=empRoles.slice();
       }
     });
     saveAll();
@@ -1447,7 +1494,7 @@ function saveEmp(){
     toast('Updated!','ok');
   } else {
     var newPhone=document.getElementById('emp-phone').value.trim().replace(/\D/g,'');
-    state.staff.push({id:'s'+Date.now(),name:fname,lastName:lname,code:code,isManager:empIsManager,isSuperUser:isSuperUser,phone:newPhone});
+    state.staff.push({id:'s'+Date.now(),name:fname,lastName:lname,code:code,isManager:empIsManager,isSuperUser:isSuperUser,phone:newPhone,roles:empRoles.slice()});
     saveAll();
     logChange(currentMgrName,'Added staff member',fname+(lname?' '+lname:'')+(isSuperUser?' (Super User)':(empIsManager?' (Manager)':'')));
     toast((isSuperUser?'Super User':'Staff')+' added!','ok');
@@ -1858,16 +1905,24 @@ function openSendModal(){
       if(s.isManager&&(s.code+'9')===code)isManagerUser=true;
     });
   }
-  var isElevated=isMgrCode||isManagerUser||person.isGhost;
+  // Check if bartender role or manager/superuser
+  var isBartender=false;
+  state.staff.forEach(function(s){
+    if(s.code===code&&s.roles&&s.roles.indexOf('bartender')>=0)isBartender=true;
+  });
+  var isElevated=isMgrCode||isManagerUser||person.isGhost||isBartender;
   if(!isElevated){
-    // Regular staff - check if blocked
+    alert('Only bartenders and managers can send the closing report.');
+    return;
+  }
+  if(!isMgrCode&&!isManagerUser&&!person.isGhost){
+    // Bartender - check if blocked
     var now2=Date.now();
     if(sentByStaff[code]&&(now2-sentByStaff[code])<3600000){
       var minsLeft=Math.ceil((3600000-(now2-sentByStaff[code]))/60000);
       alert('This PIN cannot send another report for '+minsLeft+' more minute'+(minsLeft!==1?'s':'')+'.');
       return;
     }
-    // Mark this code as used - blocked for 1 hour
     sentByStaff[code]=now2;
   }
   }
