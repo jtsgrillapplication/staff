@@ -157,7 +157,7 @@ body{font-family:system-ui,sans-serif;background:#061006;color:#f5f0e8;min-heigh
 <div class="hdr">
   <div style="display:flex;align-items:center;gap:8px"><div id="sync-indicator" style="width:8px;height:8px;border-radius:50%;background:#f44336;flex-shrink:0" title="Firebase sync status"></div><div><div class="htitle">JTs Grill</div><div class="hsub">STAFF OPERATIONS</div></div></div>
   <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
-    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 02:21 AM CT</div></div>
+    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 02:25 AM CT</div></div>
     <button onclick="location.reload()" style="background:#1a301a;border:1px solid #254025;color:#7aaa7a;padding:5px 8px;border-radius:7px;font-size:0.6rem;font-weight:700;cursor:pointer;white-space:nowrap;letter-spacing:0.5px">&#8635; Update</button>
   </div>
 </div>
@@ -595,7 +595,7 @@ var orderHistory=[];
 function saveAll(){
   localStorage.setItem('jts_version','2.0');
   try{
-    localStorage.setItem('jts_state',JSON.stringify({tasks:state.tasks,inv:state.inv,par:state.par,staff:state.staff}));
+    localStorage.setItem('jts_state',JSON.stringify({tasks:state.tasks,inv:state.inv,par:state.par})); // staff intentionally excluded - Firebase only
     localStorage.setItem('jts_changelog',JSON.stringify(changelog));
     localStorage.setItem('jts_orderhistory',JSON.stringify(orderHistory));
     localStorage.setItem('jts_emaillog',JSON.stringify(emailLog));
@@ -610,7 +610,7 @@ function loadAll(){
 
   try{
     var s=localStorage.getItem('jts_state');
-    if(s){var p=JSON.parse(s);state.tasks=p.tasks||{};state.inv=p.inv||state.inv;state.par=p.par||state.par;state.staff=p.staff||state.staff;}
+    if(s){var p=JSON.parse(s);state.tasks=p.tasks||{};state.inv=p.inv||state.inv;state.par=p.par||state.par;} // staff NOT loaded from localStorage
   }catch(e){}
   // Always ensure Whitey (master manager) exists
   var hasWhitey=false;
