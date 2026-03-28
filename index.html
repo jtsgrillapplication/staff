@@ -157,7 +157,7 @@ body{font-family:system-ui,sans-serif;background:#061006;color:#f5f0e8;min-heigh
 <div class="hdr">
   <div style="display:flex;align-items:center;gap:8px"><div id="sync-indicator" style="width:8px;height:8px;border-radius:50%;background:#f44336;flex-shrink:0" title="Firebase sync status"></div><div><div class="htitle">JTs Grill</div><div class="hsub">STAFF OPERATIONS</div></div></div>
   <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
-    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 02:25 AM CT</div></div>
+    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 02:28 AM CT</div></div>
     <button onclick="location.reload()" style="background:#1a301a;border:1px solid #254025;color:#7aaa7a;padding:5px 8px;border-radius:7px;font-size:0.6rem;font-weight:700;cursor:pointer;white-space:nowrap;letter-spacing:0.5px">&#8635; Update</button>
   </div>
 </div>
@@ -585,6 +585,7 @@ var state={shift:'AM',tasks:{},inv:{},par:{},staff:[{id:'s0',name:'Whitey',code:
     {id:'s_chris',name:'Chris',lastName:'Gehringer',code:'4441',isManager:true,isSuperUser:true,phone:'7857601298'}]};
 LIQUOR.spirits.concat(LIQUOR.beer).forEach(function(i){if(!state.inv[i.id])state.inv[i.id]={full:0,tenths:0};state.par[i.id]=state.par[i.id]||2;});
 var mgrUnlocked=false;
+var firebaseReady=false; // blocks saves until Firebase has loaded
 var sentByStaff={}; // tracks non-manager send timestamps
 var closingReports=[];
 var emailLog=[];
@@ -2066,6 +2067,7 @@ updateHostMenu();updateBarMenu();updateExpoMenu();updateServerMenu();
 // Load from Firebase first, then set up real-time listener
 db.ref('app').once('value').then(function(snap){
   var data=snap.val();
+  if(!data){firebaseReady=true;return;}
   if(data){
     if(data.state){
       state.tasks=data.state.tasks||state.tasks;
@@ -2102,7 +2104,8 @@ db.ref('app').once('value').then(function(snap){
     listKeys.forEach(function(l){renderList(l);});
     updateHostMenu();updateBarMenu();updateExpoMenu();updateServerMenu();
   }
-}).catch(function(e){console.log('Firebase load error:',e);});
+  firebaseReady=true;
+}).catch(function(e){console.log('Firebase load error:',e);firebaseReady=true;});
 
 // Real-time listener for changes from other devices
 db.ref('app').on('value',function(snap){
