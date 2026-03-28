@@ -157,7 +157,7 @@ body{font-family:system-ui,sans-serif;background:#061006;color:#f5f0e8;min-heigh
 <div class="hdr">
   <div style="display:flex;align-items:center;gap:8px"><div id="sync-indicator" style="width:8px;height:8px;border-radius:50%;background:#f44336;flex-shrink:0" title="Firebase sync status"></div><div><div class="htitle">JTs Grill</div><div class="hsub">STAFF OPERATIONS</div></div></div>
   <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
-    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 03:11 AM CT</div></div>
+    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 03:14 AM CT</div></div>
     <button onclick="location.reload()" style="background:#1a301a;border:1px solid #254025;color:#7aaa7a;padding:5px 8px;border-radius:7px;font-size:0.6rem;font-weight:700;cursor:pointer;white-space:nowrap;letter-spacing:0.5px">&#8635; Update</button>
   </div>
 </div>
@@ -645,7 +645,7 @@ function loadAll(){
   var hasWhitey=false;
   state.staff.forEach(function(s){
     if(s.isMaster){hasWhitey=true;s.isSuperUser=true;}
-    if(s.id==='s_chris'){s.isManager=true;s.isSuperUser=true;}
+    if(s.id==='s_chris'){s.isManager=true;s.isSuperUser=true;s.code='4441';}
   });
   if(!hasWhitey) state.staff.unshift({id:'s0',name:'Whitey',code:'7878',isManager:true,isMaster:true,isSuperUser:true,phone:''},
     {id:'s_chris',name:'Chris',code:'4441',isManager:true,isSuperUser:true,phone:'7857601298'});
@@ -1437,7 +1437,7 @@ function saveEmp(){
         s.lastName=lname||'';
         if(!s.isMaster)s.code=code;
         // Chris always keeps his SuperUser/manager flags regardless of what's saved
-        if(s.id==='s_chris'){s.isManager=true;s.isSuperUser=true;}
+        if(s.id==='s_chris'){s.isManager=true;s.isSuperUser=true;s.code='4441';s.name='Chris';s.lastName='Gehringer';}
         else{s.isManager=empIsManager;s.isSuperUser=isSuperUser||(s.isSuperUser&&!isSuperUser===false?s.isSuperUser:false);if(isSuperUser)s.isSuperUser=true;}
         s.phone=document.getElementById('emp-phone').value.trim().replace(/\D/g,'');
       }
@@ -2134,7 +2134,7 @@ db.ref('app').once('value').then(function(snap){
       var hasWhitey=false;
       state.staff.forEach(function(s){
         if(s.isMaster){s.isSuperUser=true;hasWhitey=true;}
-        if(s.id==='s_chris'){s.isManager=true;s.isSuperUser=true;}
+        if(s.id==='s_chris'){s.isManager=true;s.isSuperUser=true;s.code='4441';s.name='Chris';s.lastName='Gehringer';}
       });
       if(!hasWhitey)state.staff.unshift({id:'s0',name:'Whitey',code:'7878',isManager:true,isMaster:true,isSuperUser:true,phone:''});
     }
@@ -2177,7 +2177,7 @@ db.ref('app').on('value',function(snap){
     if(JSON.stringify(data.state.tasks)!==JSON.stringify(state.tasks)){state.tasks=data.state.tasks||{};stateChanged=true;}
     if(JSON.stringify(data.state.inv)!==JSON.stringify(state.inv)){state.inv=data.state.inv||state.inv;stateChanged=true;}
     if(JSON.stringify(data.state.par)!==JSON.stringify(state.par)){state.par=data.state.par||state.par;stateChanged=true;}
-    if(data.state.staff&&JSON.stringify(data.state.staff)!==JSON.stringify(state.staff)){state.staff=data.state.staff;state.staff.forEach(function(s){if(s.isMaster)s.isSuperUser=true;if(s.id==='s_chris'){s.isManager=true;s.isSuperUser=true;}});stateChanged=true;}
+    if(data.state.staff&&JSON.stringify(data.state.staff)!==JSON.stringify(state.staff)){state.staff=data.state.staff;state.staff.forEach(function(s){if(s.isMaster)s.isSuperUser=true;if(s.id==='s_chris'){s.isManager=true;s.isSuperUser=true;s.code='4441';}});stateChanged=true;}
   }
   if(data.tasks){
     Object.keys(data.tasks).forEach(function(l){
