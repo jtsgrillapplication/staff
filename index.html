@@ -157,7 +157,7 @@ body{font-family:system-ui,sans-serif;background:#061006;color:#f5f0e8;min-heigh
 <div class="hdr">
   <div style="display:flex;align-items:center;gap:8px"><div id="sync-indicator" style="width:8px;height:8px;border-radius:50%;background:#f44336;flex-shrink:0" title="Firebase sync status"></div><div><div class="htitle">JTs Grill</div><div class="hsub">STAFF OPERATIONS</div></div></div>
   <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
-    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 02:31 AM CT</div></div>
+    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 02:39 AM CT</div></div>
     <button onclick="location.reload()" style="background:#1a301a;border:1px solid #254025;color:#7aaa7a;padding:5px 8px;border-radius:7px;font-size:0.6rem;font-weight:700;cursor:pointer;white-space:nowrap;letter-spacing:0.5px">&#8635; Update</button>
   </div>
 </div>
@@ -280,9 +280,8 @@ body{font-family:system-ui,sans-serif;background:#061006;color:#f5f0e8;min-heigh
     </div>
     <div id="mgr-contact" style="display:none">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><span class="back-btn" onclick="showMgrSection('menu')">&#8592; Back</span><div style="font-weight:700;color:#f5f0e8">Contact Settings</div></div>
-      <div class="msub">Who receives notifications when a list is completed.</div>
-      <div style="font-size:0.75rem;color:#7aaa7a;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:1px">Email address</div>
-      <div style="background:#0a1a0a;border:1px solid #254025;border-radius:10px;padding:12px;font-size:0.9rem;color:#4cde50;margin-bottom:10px">jtsgrillapplication&#64;gmail.com</div>
+      <div class="msub">Phone number to receive the closing report text.</div>
+
       <div style="font-size:0.75rem;color:#7aaa7a;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:1px">Phone number</div>
       <input type="tel" class="inp" id="contact-phone" placeholder="Phone number">
       <div style="font-size:0.75rem;color:#7aaa7a;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:1px">Carrier (for SMS)</div>
@@ -594,34 +593,32 @@ var inventoryComplete=false;
 var orderHistory=[];
 
 function saveAll(){
-  if(!firebaseReady)return; // don't save until Firebase has loaded
-  // Save to localStorage as fallback (staff excluded - Firebase only)
-  localStorage.setItem('jts_version','2.0');
+  // Always save to Firebase directly - no conditions
+  db.ref('app').update({
+    'state/tasks': state.tasks,
+    'state/inv': state.inv,
+    'state/par': state.par,
+    'state/staff': state.staff,
+    'tasks': TASKS,
+    'liquor': LIQUOR,
+    'contact': contact,
+    'changelog': changelog,
+    'orderHistory': orderHistory,
+    'emailLog': emailLog,
+    'closingReports': closingReports
+  }).catch(function(e){console.log('Firebase save error:',e);});
+  // Also save to localStorage as offline fallback
   try{
-    localStorage.setItem('jts_state',JSON.stringify({tasks:state.tasks,inv:state.inv,par:state.par}));
+    localStorage.setItem('jts_version','2.0');
+    localStorage.setItem('jts_state',JSON.stringify({tasks:state.tasks,inv:state.inv,par:state.par,staff:state.staff}));
+    localStorage.setItem('jts_tasks',JSON.stringify(TASKS));
+    localStorage.setItem('jts_liquor',JSON.stringify(LIQUOR));
+    localStorage.setItem('jts_contact',JSON.stringify(contact));
     localStorage.setItem('jts_changelog',JSON.stringify(changelog));
     localStorage.setItem('jts_orderhistory',JSON.stringify(orderHistory));
     localStorage.setItem('jts_emaillog',JSON.stringify(emailLog));
     localStorage.setItem('jts_closing',JSON.stringify(closingReports));
-    localStorage.setItem('jts_tasks',JSON.stringify(TASKS));
-    localStorage.setItem('jts_liquor',JSON.stringify(LIQUOR));
-    localStorage.setItem('jts_contact',JSON.stringify(contact));
   }catch(e){}
-  // Save everything including staff to Firebase
-  if(fbConnected){
-    try{
-      db.ref('app').set({
-        state:{tasks:state.tasks,inv:state.inv,par:state.par,staff:state.staff},
-        tasks:TASKS,
-        liquor:LIQUOR,
-        contact:contact,
-        changelog:changelog,
-        orderHistory:orderHistory,
-        emailLog:emailLog,
-        closingReports:closingReports
-      });
-    }catch(e){console.log('Firebase save error:',e);}
-  }
 }
 
 function loadAll(){
@@ -1447,7 +1444,8 @@ function deleteEmp(){
   }
   var gone=targetStaff?targetStaff.name:'';
   state.staff=state.staff.filter(function(s){return s.id!==editingEmpId;});
-  saveAll();logChange(currentMgrName,'Removed staff member',gone);closeM('modal-emp');renderStaff();toast('Removed','ok');
+  saveAll();
+  logChange(currentMgrName,'Removed staff member',gone);closeM('modal-emp');renderStaff();toast('Removed','ok');
 }
 
 function showInvTab(tab){
@@ -1882,44 +1880,24 @@ function openSendModal(){
     alert('Closing Report Sent.');
     showClosingReportText(summary);
   };
-  // Send email via EmailJS
-  if(contact.email){
-    emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
-      to_email:contact.email,
-      subject:'JTs Grill - Closing Report - '+now.toLocaleDateString(),
-      message:summary
-    }).then(function(){
-      sent++;
-      // Send SMS if configured and enabled
-      if(contact.sendSMS&&contact.phone&&contact.carrier){
-        var smsAddr=contact.phone+'@'+contact.carrier;
-        emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
-          to_email:smsAddr,
-          subject:"JTs Grill",
-          message:"JT's is closed, tasks complete"
-        }).then(function(){sent++;sendDone(sent);})
-        .catch(function(){sendDone(sent);});
-      } else {
-        sendDone(sent);
-      }
-    }).catch(function(err){
-      console.log('EmailJS error:',err);
-      alert('Email failed to send. Check contact settings.');
-      showClosingReportText(summary);
-    });
-  } else if(contact.sendSMS&&contact.phone&&contact.carrier){
-    // SMS only
+  // Send SMS only
+  if(contact.phone&&contact.carrier){
     var smsAddr=contact.phone+'@'+contact.carrier;
     emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
       to_email:smsAddr,
       subject:"JTs Grill",
       message:"JT's is closed, tasks complete"
-    }).then(function(){sent++;sendDone(sent);})
-    .catch(function(err){
+    }).then(function(){
+      sent++;
+      sendDone(sent);
+    }).catch(function(err){
       console.log('EmailJS SMS error:',err);
-      alert('SMS failed to send.');
+      alert('SMS failed to send. Check phone number and carrier in Contact settings.');
       showClosingReportText(summary);
     });
+  } else {
+    alert('No phone number set. Please add a phone number in Manager > Contact.');
+    showClosingReportText(summary);
   }
 }
 
@@ -2053,6 +2031,27 @@ function canCompleteTask(){
   if(IS_REMOTE&&ACCESS_LEVEL===2)return false;
   return true;
 }
+
+// 3AM auto-send check
+var autoSendChecked=false;
+function checkAutoSend(){
+  if(autoSendChecked)return;
+  var now=new Date();
+  var ct=new Date(now.toLocaleString('en-US',{timeZone:'America/Chicago'}));
+  var h=ct.getHours(),m=ct.getMinutes();
+  // Between 3:00 AM and 3:05 AM Central
+  if(h===3&&m<5){
+    autoSendChecked=true;
+    // Check if a report has been sent in the last 24 hours
+    var last24=Date.now()-24*60*60*1000;
+    var sentRecently=closingReports.length>0&&new Date(closingReports[0].ts).getTime()>=last24;
+    if(!sentRecently){
+      openSendModal();
+    }
+  }
+}
+// Check every minute
+setInterval(checkAutoSend,60000);
 
 function switchTab(t){
   clearSelection();
