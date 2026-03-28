@@ -157,7 +157,7 @@ body{font-family:system-ui,sans-serif;background:#061006;color:#f5f0e8;min-heigh
 <div class="hdr">
   <div style="display:flex;align-items:center;gap:8px"><div id="sync-indicator" style="width:8px;height:8px;border-radius:50%;background:#f44336;flex-shrink:0" title="Firebase sync status"></div><div><div class="htitle">JTs Grill</div><div class="hsub">STAFF OPERATIONS</div></div></div>
   <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
-    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 02:39 AM CT</div></div>
+    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 02:56 AM CT</div></div>
     <button onclick="location.reload()" style="background:#1a301a;border:1px solid #254025;color:#7aaa7a;padding:5px 8px;border-radius:7px;font-size:0.6rem;font-weight:700;cursor:pointer;white-space:nowrap;letter-spacing:0.5px">&#8635; Update</button>
   </div>
 </div>
@@ -280,12 +280,12 @@ body{font-family:system-ui,sans-serif;background:#061006;color:#f5f0e8;min-heigh
     </div>
     <div id="mgr-contact" style="display:none">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><span class="back-btn" onclick="showMgrSection('menu')">&#8592; Back</span><div style="font-weight:700;color:#f5f0e8">Contact Settings</div></div>
-      <div class="msub">Phone number to receive the closing report text.</div>
+      <div class="msub">Phone numbers to receive the closing report text.</div>
 
-      <div style="font-size:0.75rem;color:#7aaa7a;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:1px">Phone number</div>
+      <div style="font-size:0.75rem;color:#7aaa7a;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:1px">Phone Number 1</div>
       <input type="tel" class="inp" id="contact-phone" placeholder="Phone number">
-      <div style="font-size:0.75rem;color:#7aaa7a;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:1px">Carrier (for SMS)</div>
-      <select class="inp" id="contact-carrier" style="padding:12px;cursor:pointer">
+      <div style="font-size:0.75rem;color:#7aaa7a;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:1px">Carrier 1</div>
+      <select class="inp" id="contact-carrier" style="padding:12px;cursor:pointer;margin-bottom:8px">
         <option value="tmomail.net">T-Mobile</option>
         <option value="vtext.com">Verizon</option>
         <option value="txt.att.net">AT&T</option>
@@ -293,16 +293,30 @@ body{font-family:system-ui,sans-serif;background:#061006;color:#f5f0e8;min-heigh
         <option value="mymetropcs.com">Metro PCS</option>
         <option value="email.uscc.net">US Cellular</option>
       </select>
-      <div class="chk-row" onclick="toggleSMSChk()" style="margin-top:4px;border-bottom:none">
-        <div class="chk-box" id="sms-chk"></div>
-        <div><div class="chk-label">Send text message</div><div class="chk-sub">Also send SMS when closing report fires</div></div>
+      <div class="chk-row" onclick="toggleSMS1Chk()" style="margin-bottom:14px;border-bottom:none">
+        <div class="chk-box" id="sms-chk1"></div>
+        <div><div class="chk-label">Send Closing Report to this number?</div></div>
       </div>
-            <button class="btn btn-p" onclick="saveContact()">Save Contact Info</button>
-      <hr class="contact-divider">
-      <div style="font-size:0.75rem;color:#7aaa7a;margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px">Test Notifications</div>
-      <div style="font-size:0.82rem;color:#7aaa7a;margin-bottom:12px">Send a test message to verify your email and SMS are working correctly.</div>
-      <button class="btn btn-t" onclick="sendTestMessage()">Send Test Message</button>
-    </div>
+
+      <div style="font-size:0.75rem;color:#7aaa7a;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:1px">Phone Number 2 (optional)</div>
+      <input type="tel" class="inp" id="contact-phone2" placeholder="Phone number">
+      <div style="font-size:0.75rem;color:#7aaa7a;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:1px">Carrier 2</div>
+      <select class="inp" id="contact-carrier2" style="padding:12px;cursor:pointer;margin-bottom:8px">
+        <option value="tmomail.net">T-Mobile</option>
+        <option value="vtext.com">Verizon</option>
+        <option value="txt.att.net">AT&T</option>
+        <option value="messaging.sprintpcs.com">Sprint</option>
+        <option value="mymetropcs.com">Metro PCS</option>
+        <option value="email.uscc.net">US Cellular</option>
+      </select>
+      <div class="chk-row" onclick="toggleSMS2Chk()" style="margin-bottom:14px;border-bottom:none">
+        <div class="chk-box" id="sms-chk2"></div>
+        <div><div class="chk-label">Send Closing Report to this number?</div></div>
+      </div>
+
+
+      <button class="btn btn-p" onclick="saveContact()" style="margin-top:12px">Save Contact Info</button>
+      <button class="btn btn-s" onclick="sendTestMessage()" style="margin-top:8px">Send Test Message</button>
     <div id="mgr-changelog" style="display:none">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
         <div style="display:flex;align-items:center;gap:10px"><span class="back-btn" onclick="showMgrSection('menu')">&#8592; Back</span><div style="font-weight:700;color:#f5f0e8">Change Log</div></div>
@@ -412,7 +426,7 @@ var selected={}, currentList=null, editingList=null, editingTaskId=null, editing
 var empIsManager=false;
 var DAY_NAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 var LIST_LABELS={host_day:'Day Host',host_night:'Night Host',bar_day:'Day Bar',bar_night:'Night Bar',expo_day:'Day Expo',expo_night:'Night Expo',server_day:'Day Server',server_night:'Night Server'};
-var contact={email:'jtsgrillapplication@gmail.com',phone:'',carrier:'tmomail.net',sendSMS:false};
+var contact={email:'jtsgrillapplication@gmail.com',phone:'',carrier:'tmomail.net',sendSMS1:false,phone2:'',carrier2:'tmomail.net',sendSMS2:false};
 
 var changelog=[];
 
@@ -594,19 +608,18 @@ var orderHistory=[];
 
 function saveAll(){
   // Always save to Firebase directly - no conditions
-  db.ref('app').update({
-    'state/tasks': state.tasks,
-    'state/inv': state.inv,
-    'state/par': state.par,
-    'state/staff': state.staff,
-    'tasks': TASKS,
-    'liquor': LIQUOR,
-    'contact': contact,
-    'changelog': changelog,
-    'orderHistory': orderHistory,
-    'emailLog': emailLog,
-    'closingReports': closingReports
-  }).catch(function(e){console.log('Firebase save error:',e);});
+  // Save each section explicitly to avoid path issues
+  var appData={
+    state:{tasks:state.tasks,inv:state.inv,par:state.par,staff:state.staff},
+    tasks:TASKS,
+    liquor:LIQUOR,
+    contact:contact,
+    changelog:changelog,
+    orderHistory:orderHistory,
+    emailLog:emailLog,
+    closingReports:closingReports
+  };
+  db.ref('app').set(appData).catch(function(e){console.log('Firebase save error:',e);});
   // Also save to localStorage as offline fallback
   try{
     localStorage.setItem('jts_version','2.0');
@@ -749,17 +762,17 @@ function naSelected(){
     selected[l].forEach(function(id){
       var k=tk(l,id);
       if(!state.tasks[k]){
-        state.tasks[k]={initials:'N/A',name:'Not Applicable',timestamp:ts,na:true};
+        var taskData={initials:'N/A',name:'Not Applicable',timestamp:ts,na:true};
+        state.tasks[k]=taskData;
+        // Save only this specific task to Firebase
+        db.ref('app/state/tasks/'+k).set(taskData).catch(function(e){console.log('Task save error:',e);});
         count++;
         if(listsAffected.indexOf(l)<0)listsAffected.push(l);
       }
     });
   });
   selected={};document.getElementById('code-bar-input').value='';updateCodeBar();
-  listsAffected.forEach(function(l){
-    renderList(l);
-  });
-  saveAll();
+  listsAffected.forEach(function(l){renderList(l);});
   toast('Marked N/A ('+count+' task'+(count>1?'s':'')+')','ok');
 }
 
@@ -796,38 +809,29 @@ function sendCompletionNotification(l){
 }
 
 function sendTestMessage(){
-  // Always use fixed email from contact object
-  var email='jtsgrillapplication@gmail.com';
-  var phone=document.getElementById('contact-phone').value.trim().replace(/\D/g,'');
-  var carrier=document.getElementById('contact-carrier').value;
-  if(!canSendEmail()){toast('Monthly email limit reached (175). Cannot send.','err');return;}
-  toast('Sending test message...','info');
-  var testMsg='This is a test message from the JTs Grill Staff App. If you received this, notifications are working correctly! Sent: '+new Date().toLocaleString();
-  emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
-    to_email:email,
-    subject:'JTs Grill - Test Message',
-    message:testMsg
-  }).then(function(){
-    logEmail(1);
-    var ec=getEmailCount();var ecEl=document.getElementById('mgr-email-count');if(ecEl){ecEl.textContent='Emails sent last 30 days: '+ec;ecEl.style.color=ec>=175?'#f44336':ec>=150?'#f0a500':'#7aaa7a';}
-    toast('Test email sent successfully!','ok');
-  }).catch(function(err){
-    console.log('EmailJS error:',err);
-    toast('Email failed to send','err');
-  });
-  if(contact.sendSMS&&phone&&carrier){
-    var smsAddr=phone+'@'+carrier;
+  if(!canSendEmail()){toast('Monthly limit reached (175)','err');return;}
+  if(!contact.phone&&!contact.phone2){toast('No phone numbers set','err');return;}
+  toast('Sending test messages...','info');
+  var testMsg='Test from JTs Grill Staff App - working! Sent: '+new Date().toLocaleString();
+  if(contact.phone&&contact.carrier){
     emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
-      to_email:smsAddr,
-      subject:'JTs Grill Test',
-      message:'Test from JTs Grill Staff App - working!'
+      to_email:contact.phone+'@'+contact.carrier,
+      subject:'JTs Grill Test',message:testMsg
     }).then(function(){
       logEmail(1);
       var ec=getEmailCount();var ecEl=document.getElementById('mgr-email-count');if(ecEl){ecEl.textContent='Emails sent last 30 days: '+ec;ecEl.style.color=ec>=175?'#f44336':ec>=150?'#f0a500':'#7aaa7a';}
-      toast('Test SMS sent successfully!','ok');
-    }).catch(function(err){
-      toast('SMS failed to send','err');
-    });
+      toast('Test SMS 1 sent!','ok');
+    }).catch(function(){toast('SMS 1 failed','err');});
+  }
+  if(contact.phone2&&contact.carrier2){
+    emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
+      to_email:contact.phone2+'@'+contact.carrier2,
+      subject:'JTs Grill Test',message:testMsg
+    }).then(function(){
+      logEmail(1);
+      var ec=getEmailCount();var ecEl=document.getElementById('mgr-email-count');if(ecEl){ecEl.textContent='Emails sent last 30 days: '+ec;ecEl.style.color=ec>=175?'#f44336':ec>=150?'#f0a500':'#7aaa7a';}
+      toast('Test SMS 2 sent!','ok');
+    }).catch(function(){toast('SMS 2 failed','err');});
   }
 }
 
@@ -1127,27 +1131,54 @@ function lockMgr(){
   document.getElementById('mgr-code-inp').value='';
 }
 
-function toggleSMSChk(){
-  contact.sendSMS=!contact.sendSMS;
-  var box=document.getElementById('sms-chk');
-  if(contact.sendSMS){box.classList.add('on');box.innerHTML='&#10003;';}
+function savePhone(n){
+  if(n===1){
+    contact.phone=document.getElementById('contact-phone').value.trim().replace(/\D/g,'');
+    contact.carrier=document.getElementById('contact-carrier').value;
+  } else {
+    contact.phone2=document.getElementById('contact-phone2').value.trim().replace(/\D/g,'');
+    contact.carrier2=document.getElementById('contact-carrier2').value;
+  // sendSMS1 and sendSMS2 toggled live
+  }
+  saveAll();
+  toast('Phone '+(n===1?'1':'2')+' saved!','ok');
+}
+
+function toggleSMS1Chk(){
+  contact.sendSMS1=!contact.sendSMS1;
+  var box=document.getElementById('sms-chk1');
+  if(contact.sendSMS1){box.classList.add('on');box.innerHTML='&#10003;';}
+  else{box.classList.remove('on');box.innerHTML='';}
+}
+
+function toggleSMS2Chk(){
+  contact.sendSMS2=!contact.sendSMS2;
+  var box=document.getElementById('sms-chk2');
+  if(contact.sendSMS2){box.classList.add('on');box.innerHTML='&#10003;';}
   else{box.classList.remove('on');box.innerHTML='';}
 }
 
 function loadContact(){
-  contact.email='jtsgrillapplication@gmail.com'; // always use fixed address
+  contact.email='jtsgrillapplication@gmail.com';
   document.getElementById('contact-phone').value=contact.phone||'';
+  document.getElementById('contact-phone2').value=contact.phone2||'';
   var sel=document.getElementById('contact-carrier');
   for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===contact.carrier){sel.selectedIndex=i;break;}}
-  var smsBox=document.getElementById('sms-chk');
-  if(smsBox){if(contact.sendSMS){smsBox.classList.add('on');smsBox.innerHTML='&#10003;';}else{smsBox.classList.remove('on');smsBox.innerHTML='';}}
+  var sel2=document.getElementById('contact-carrier2');
+  for(var i=0;i<sel2.options.length;i++){if(sel2.options[i].value===contact.carrier2){sel2.selectedIndex=i;break;}}
+  var box1=document.getElementById('sms-chk1');
+  if(box1){if(contact.sendSMS1){box1.classList.add('on');box1.innerHTML='&#10003;';}else{box1.classList.remove('on');box1.innerHTML='';}}
+  var box2=document.getElementById('sms-chk2');
+  if(box2){if(contact.sendSMS2){box2.classList.add('on');box2.innerHTML='&#10003;';}else{box2.classList.remove('on');box2.innerHTML='';}}
 }
 
 function saveContact(){
-  contact.email='jtsgrillapplication@gmail.com'; // fixed address
+  contact.email='jtsgrillapplication@gmail.com';
   contact.phone=document.getElementById('contact-phone').value.trim().replace(/\D/g,'');
   contact.carrier=document.getElementById('contact-carrier').value;
-  // sendSMS is toggled live via checkbox, already in contact.sendSMS
+  contact.phone2=document.getElementById('contact-phone2').value.trim().replace(/\D/g,'');
+  contact.carrier2=document.getElementById('contact-carrier2').value;
+  // sendSMS1 and sendSMS2 toggled live
   saveAll();logChange(currentMgrName,'Updated contact settings',contact.email+(contact.phone?' / '+contact.phone:''));toast('Contact saved!','ok');
 }
 
@@ -1880,24 +1911,28 @@ function openSendModal(){
     alert('Closing Report Sent.');
     showClosingReportText(summary);
   };
-  // Send SMS only
-  if(contact.phone&&contact.carrier){
-    var smsAddr=contact.phone+'@'+contact.carrier;
-    emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
-      to_email:smsAddr,
-      subject:"JTs Grill",
-      message:"JT's is closed, tasks complete"
-    }).then(function(){
-      sent++;
-      sendDone(sent);
-    }).catch(function(err){
-      console.log('EmailJS SMS error:',err);
-      alert('SMS failed to send. Check phone number and carrier in Contact settings.');
-      showClosingReportText(summary);
-    });
-  } else {
-    alert('No phone number set. Please add a phone number in Manager > Contact.');
+  if(!contact.phone&&!contact.phone2){
+    alert('No phone number set. Add one in Manager > Contact.');
     showClosingReportText(summary);
+    return;
+  }
+  var smsSent=0;
+  var smsTotal=(contact.sendSMS1&&contact.phone?1:0)+(contact.sendSMS2&&contact.phone2?1:0);
+  if(smsTotal===0){alert('No numbers enabled. Check "Send Closing Report" under each number in Contact settings.');showClosingReportText(summary);return;}
+  var onSmsDone=function(){smsSent++;if(smsSent>=smsTotal)sendDone(smsSent);};
+  if(contact.sendSMS1&&contact.phone&&contact.carrier){
+    emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
+      to_email:contact.phone+'@'+contact.carrier,
+      subject:'JTs Grill',
+      message:"JT's is closed, tasks complete"
+    }).then(onSmsDone).catch(function(){onSmsDone();});
+  }
+  if(contact.sendSMS2&&contact.phone2&&contact.carrier2){
+    emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
+      to_email:contact.phone2+'@'+contact.carrier2,
+      subject:'JTs Grill',
+      message:"JT's is closed, tasks complete"
+    }).then(onSmsDone).catch(function(){onSmsDone();});
   }
 }
 
@@ -2077,8 +2112,7 @@ function openSubList(l){clearSelection();document.querySelectorAll('.panel').for
 function closeM(id){document.getElementById(id).classList.remove('on');}
 function toast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className='toast on'+(type?' '+type:'');setTimeout(function(){t.className='toast';},2800);}
 document.querySelectorAll('.overlay').forEach(function(o){o.addEventListener('click',function(e){if(e.target===o)o.classList.remove('on');});});
-listKeys.forEach(function(l){renderList(l);});
-updateHostMenu();updateBarMenu();updateExpoMenu();updateServerMenu();
+// Renders moved to after Firebase loads - see once() callback
 
 // Load from Firebase first, then set up real-time listener
 db.ref('app').once('value').then(function(snap){
@@ -2117,11 +2151,18 @@ db.ref('app').once('value').then(function(snap){
     if(data.orderHistory)orderHistory=data.orderHistory;
     if(data.emailLog)emailLog=data.emailLog;
     if(data.closingReports)closingReports=data.closingReports;
-    listKeys.forEach(function(l){renderList(l);});
-    updateHostMenu();updateBarMenu();updateExpoMenu();updateServerMenu();
   }
   firebaseReady=true;
-}).catch(function(e){console.log('Firebase load error:',e);firebaseReady=true;});
+  // Render everything now that Firebase data is loaded
+  listKeys.forEach(function(l){renderList(l);});
+  updateHostMenu();updateBarMenu();updateExpoMenu();updateServerMenu();
+}).catch(function(e){
+  console.log('Firebase load error:',e);
+  firebaseReady=true;
+  // Render with local data as fallback
+  listKeys.forEach(function(l){renderList(l);});
+  updateHostMenu();updateBarMenu();updateExpoMenu();updateServerMenu();
+});
 
 // Real-time listener for changes from other devices
 db.ref('app').on('value',function(snap){
