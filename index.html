@@ -97,7 +97,7 @@ body{font-family:system-ui,sans-serif;background:#061006;color:#f5f0e8;min-heigh
 .code-bar{position:fixed;bottom:0;left:0;right:0;background:#0a1a0a;border-top:2px solid #2e6b2e;padding:12px 16px;z-index:150;display:none;align-items:center;gap:10px}
 .code-bar.visible{display:flex}
 .code-bar-count{font-weight:700;color:#4cde50;font-size:0.85rem;flex-shrink:0}
-.code-bar-input{flex:1;background:#112211;border:1px solid #2e6b2e;border-radius:8px;padding:8px 12px;font-size:1rem;font-weight:700;color:#f5f0e8;text-align:center;letter-spacing:4px;outline:none;max-width:140px}
+.code-bar-input{flex:1;min-width:0;background:#112211;border:1px solid #2e6b2e;border-radius:8px;padding:8px 12px;font-size:1rem;font-weight:700;color:#f5f0e8;text-align:center;letter-spacing:4px;outline:none;max-width:140px}
 .code-bar-input:focus{border-color:#4cde50}
 .code-bar-clear{background:none;border:none;color:#7aaa7a;font-size:0.75rem;cursor:pointer;padding:4px 8px;flex-shrink:0}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:flex-end;justify-content:center}
@@ -157,7 +157,7 @@ body{font-family:system-ui,sans-serif;background:#061006;color:#f5f0e8;min-heigh
 <div class="hdr">
   <div style="display:flex;align-items:center;gap:8px"><div id="sync-indicator" style="width:8px;height:8px;border-radius:50%;background:#f44336;flex-shrink:0" title="Firebase sync status"></div><div><div class="htitle">JTs Grill</div><div class="hsub">STAFF OPERATIONS</div></div></div>
   <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
-    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 03:01 AM CT</div></div>
+    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 03:04 AM CT</div></div>
     <button onclick="location.reload()" style="background:#1a301a;border:1px solid #254025;color:#7aaa7a;padding:5px 8px;border-radius:7px;font-size:0.6rem;font-weight:700;cursor:pointer;white-space:nowrap;letter-spacing:0.5px">&#8635; Update</button>
   </div>
 </div>
