@@ -157,7 +157,7 @@ body{font-family:system-ui,sans-serif;background:#061006;color:#f5f0e8;min-heigh
 <div class="hdr">
   <div style="display:flex;align-items:center;gap:8px"><div id="sync-indicator" style="width:8px;height:8px;border-radius:50%;background:#f44336;flex-shrink:0" title="Firebase sync status"></div><div><div class="htitle">JTs Grill</div><div class="hsub">STAFF OPERATIONS</div></div></div>
   <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
-    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 03:14 AM CT</div></div>
+    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 03:18 AM CT</div></div>
     <button onclick="location.reload()" style="background:#1a301a;border:1px solid #254025;color:#7aaa7a;padding:5px 8px;border-radius:7px;font-size:0.6rem;font-weight:700;cursor:pointer;white-space:nowrap;letter-spacing:0.5px">&#8635; Update</button>
   </div>
 </div>
@@ -1887,43 +1887,35 @@ function openSendModal(){
     showClosingReportText(summary);
     return;
   }
-  if(!contact.email&&!contact.phone){
-    alert('No contact info set. Report saved to history.');
-    showClosingReportText(summary);
-    return;
-  }
   var sent=0;
-  var sendDone=function(count){
-    logEmail(count);
-    var ec=getEmailCount();var ecEl=document.getElementById('mgr-email-count');if(ecEl){ecEl.textContent='Emails sent last 30 days: '+ec;ecEl.style.color=ec>=175?'#f44336':ec>=150?'#f0a500':'#7aaa7a';}
-    logChange(currentMgrName,'Sent closing report',now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
-    saveAll();
-    alert('Closing Report Sent.');
-    showClosingReportText(summary);
-  };
-  if(!contact.phone&&!contact.phone2){
-    alert('No phone number set. Add one in Manager > Contact.');
-    showClosingReportText(summary);
-    return;
-  }
+
+  // Always clear tasks and show report regardless of SMS
+  logChange(currentMgrName,'Sent closing report',now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+  saveAll();
+  clearAllTasks();
+  // Try to send SMS if configured
   var smsSent=0;
   var smsTotal=(contact.sendSMS1&&contact.phone?1:0)+(contact.sendSMS2&&contact.phone2?1:0);
-  if(smsTotal===0){alert('No numbers enabled. Check "Send Closing Report" under each number in Contact settings.');showClosingReportText(summary);return;}
-  var onSmsDone=function(){smsSent++;if(smsSent>=smsTotal)sendDone(smsSent);};
-  if(contact.sendSMS1&&contact.phone&&contact.carrier){
-    emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
-      to_email:contact.phone+'@'+contact.carrier,
-      subject:'JTs Grill',
-      message:"JT's is closed, tasks complete"
-    }).then(onSmsDone).catch(function(){onSmsDone();});
+  if(smsTotal>0&&canSendEmail()){
+    var onSmsDone=function(){smsSent++;if(smsSent>=smsTotal){logEmail(smsSent);saveAll();}};
+    if(contact.sendSMS1&&contact.phone&&contact.carrier){
+      emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
+        to_email:contact.phone+'@'+contact.carrier,
+        subject:'JTs Grill',
+        message:"JT's is closed, tasks complete"
+      }).then(onSmsDone).catch(function(){onSmsDone();});
+    }
+    if(contact.sendSMS2&&contact.phone2&&contact.carrier2){
+      emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
+        to_email:contact.phone2+'@'+contact.carrier2,
+        subject:'JTs Grill',
+        message:"JT's is closed, tasks complete"
+      }).then(onSmsDone).catch(function(){onSmsDone();});
+    }
   }
-  if(contact.sendSMS2&&contact.phone2&&contact.carrier2){
-    emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,{
-      to_email:contact.phone2+'@'+contact.carrier2,
-      subject:'JTs Grill',
-      message:"JT's is closed, tasks complete"
-    }).then(onSmsDone).catch(function(){onSmsDone();});
-  }
+  var ec=getEmailCount();var ecEl=document.getElementById('mgr-email-count');if(ecEl){ecEl.textContent='Emails sent last 30 days: '+ec;ecEl.style.color=ec>=175?'#f44336':ec>=150?'#f0a500':'#7aaa7a';}
+  alert('Closing Report Sent.');
+  showClosingReportText(summary);
 }
 
 
@@ -2069,6 +2061,7 @@ function autoSendClosingReport(){
   closingReports=closingReports.filter(function(r){return new Date(r.ts)>=cutoff;});
   logChange('Auto','Closing report recorded at 3AM','');
   saveAll();
+  clearAllTasks();
 }
 
 function checkAutoSend(){
@@ -2090,6 +2083,13 @@ function checkAutoSend(){
 }
 // Check every minute
 setInterval(checkAutoSend,60000);
+
+function clearAllTasks(){
+  state.tasks={};
+  db.ref('app/state/tasks').set({}).catch(function(e){console.log('Clear tasks error:',e);});
+  listKeys.forEach(function(l){renderList(l);});
+  updateHostMenu();updateBarMenu();updateExpoMenu();updateServerMenu();
+}
 
 function switchTab(t){
   clearSelection();
