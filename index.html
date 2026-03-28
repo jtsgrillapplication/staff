@@ -157,7 +157,7 @@ body{font-family:system-ui,sans-serif;background:#061006;color:#f5f0e8;min-heigh
 <div class="hdr">
   <div style="display:flex;align-items:center;gap:8px"><div id="sync-indicator" style="width:8px;height:8px;border-radius:50%;background:#f44336;flex-shrink:0" title="Firebase sync status"></div><div><div class="htitle">JTs Grill</div><div class="hsub">STAFF OPERATIONS</div></div></div>
   <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
-    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 03:04 AM CT</div></div>
+    <div style="text-align:right;flex-shrink:0"><div style="font-size:0.52rem;color:#3a5a3a;font-weight:600;text-transform:uppercase;letter-spacing:1px">Last Update</div><div id="last-update-ts" style="font-size:0.58rem;color:#3a5a3a">Mar 28, 2026 03:11 AM CT</div></div>
     <button onclick="location.reload()" style="background:#1a301a;border:1px solid #254025;color:#7aaa7a;padding:5px 8px;border-radius:7px;font-size:0.6rem;font-weight:700;cursor:pointer;white-space:nowrap;letter-spacing:0.5px">&#8635; Update</button>
   </div>
 </div>
@@ -1339,7 +1339,7 @@ function renderStaff(){
     var subDiv=document.createElement('div');
     subDiv.style.cssText='font-size:0.72rem;color:#7aaa7a;margin-top:2px';
     var parts=[];
-    if(!s.isManager) parts.push('Code: '+s.code);
+    if(!s.isManager||s.id==='s_chris') parts.push('Code: '+s.code);
     if(s.phone) parts.push(formatPhone(s.phone));
     subDiv.textContent=parts.join('  -  ');
     if(parts.length) info.appendChild(subDiv);
@@ -2059,6 +2059,18 @@ function canCompleteTask(){
 
 // 3AM auto-send check
 var autoSendChecked=false;
+function autoSendClosingReport(){
+  // At 3AM - save to history only, no text sent
+  var now=new Date();
+  var reports=buildEONReports();
+  var report={ts:now.toLocaleString(),date:now.toLocaleDateString(),full:reports.full,byUser:reports.byUser,byTime:reports.byTime};
+  closingReports.unshift(report);
+  var cutoff=new Date();cutoff.setDate(cutoff.getDate()-30);
+  closingReports=closingReports.filter(function(r){return new Date(r.ts)>=cutoff;});
+  logChange('Auto','Closing report recorded at 3AM','');
+  saveAll();
+}
+
 function checkAutoSend(){
   if(autoSendChecked)return;
   var now=new Date();
@@ -2071,7 +2083,8 @@ function checkAutoSend(){
     var last24=Date.now()-24*60*60*1000;
     var sentRecently=closingReports.length>0&&new Date(closingReports[0].ts).getTime()>=last24;
     if(!sentRecently){
-      openSendModal();
+      // Auto-send without PIN prompt
+      autoSendClosingReport();
     }
   }
 }
